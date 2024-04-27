@@ -1,7 +1,10 @@
+import "primeicons/primeicons.css";
 import {PrimeReactProvider} from "primereact/api";
-import "primereact/resources/themes/lara-light-cyan/theme.css";
+import "primereact/resources/themes/lara-light-blue/theme.css";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import "./App.css";
-import HomePage from "./features/HomePage";
+import HomePage from "./components/HomePage";
+import Message from "./components/MessagePage";
 import "/node_modules/primeflex/primeflex.css";
 
 function App() {
@@ -9,19 +12,12 @@ function App() {
 		<PrimeReactProvider>
 			<div className="App">
 				<header className="App-header">
-					{/* <img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.tsx</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a> */}
-					<HomePage />
+					<BrowserRouter>
+						<Routes>
+							<Route path="/SR_2024" element={<HomePage />} />
+							<Route path="/message" element={<Message />} />
+						</Routes>
+					</BrowserRouter>
 				</header>
 			</div>
 		</PrimeReactProvider>
