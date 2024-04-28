@@ -13,14 +13,11 @@ const Message = () => {
 	const [msg, setMsg] = useState("");
 	const navigate = useNavigate();
 
-	useEffect(() => {
-		setName(loadState("name"));
-		loadMsg();
-	});
-
 	const usersCollectionRef = collection(db, "users").withConverter(
 		userConverter
 	);
+
+	setName(loadState("name"));
 
 	const loadMsg = async () => {
 		const usersData = await getDocs(usersCollectionRef);
@@ -33,6 +30,10 @@ const Message = () => {
 			}
 		});
 	};
+
+	useEffect(() => {
+		loadMsg();
+	});
 
 	return (
 		<div className="flex flex-column gap-5 homepage">
