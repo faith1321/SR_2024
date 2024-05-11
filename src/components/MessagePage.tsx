@@ -1,11 +1,12 @@
 import {collection, getDocs} from "firebase/firestore";
 import {getDownloadURL, getStorage, ref} from "firebase/storage";
 import {
-	MotionValue,
+	AnimatePresence,
 	motion,
+	useAnimate,
+	useInView,
 	useScroll,
 	useSpring,
-	useTransform,
 } from "framer-motion";
 import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
@@ -21,6 +22,9 @@ const Message = () => {
 	const [msg, setMsg] = useState("");
 	const [url, setURL] = useState("");
 	const navigate = useNavigate();
+
+	const [scope, animate] = useAnimate();
+	const isInView = useInView(scope);
 
 	const usersCollectionRef = collection(db, "users").withConverter(
 		userConverter
@@ -45,39 +49,57 @@ const Message = () => {
 		loadData();
 	}, [name]);
 
-	function useParallax(value: MotionValue<number>, distance: number) {
-		return useTransform(value, [0, 1], [-distance, distance]);
-	}
+	// function useParallax(value: MotionValue<number>, distance: number) {
+	// 	return useTransform(value, [0, 1], [-distance, distance]);
+	// }
 
 	function Image({urlString}: {urlString: string}) {
 		const ref = useRef(null);
 		const {scrollYProgress} = useScroll({target: ref});
-		const y = useParallax(scrollYProgress, 300);
+		// const y = useParallax(scrollYProgress, 300);
 
 		return (
 			<section>
 				<div ref={ref}>
-					<img src={url} alt="Cloud Storage" />
+					<img ref={scope} src={url} alt="Cloud Storage" />
 				</div>
 				{/* <motion.h2 style={{y}}>{name}</motion.h2> */}
 			</section>
 		);
 	}
 
-	const Paragraph = () => {
+	const Paragraph = ({data}: {data: string}) => {
 		const ref = useRef(null);
 		const {scrollYProgress} = useScroll({
 			target: ref,
 			offset: ["end", "start"],
 		});
-		const scaleX = useSpring(scrollYProgress);
+		// const scaleX = useSpring(scrollYProgress);
 
 		return (
-			<p className="header-p">
-				<motion.div style={{scaleX}}>{msg}</motion.div>
+			<p className="paragraph">
+				<motion.div
+					className="paragraph-text"
+					style={{scale: scrollYProgress}}
+					initial={{opacity: 0, scale: 0}}
+					animate={{opacity: 1, scale: [0, 1]}}
+					transition={{
+						duration: 0.8,
+						delay: 0.1,
+						ease: [0, 0.71, 0.2, 1.01],
+					}}
+				>
+					{data}
+				</motion.div>
 			</p>
 		);
 	};
+
+	useEffect(() => {
+		if (isInView) {
+			animate(scope.current, {opacity: 1});
+		}
+	}, [isInView]);
 
 	const reference = useRef(null);
 	const {scrollYProgress} = useScroll({
@@ -106,13 +128,20 @@ const Message = () => {
 	console.log("data: " + data);
 
 	return (
-		<header>
-			<Paragraph />
-			<motion.div className="progress" style={{scaleX}} />
-			{data.map((image) => (
-				<Image urlString={image} key={image} />
-			))}
-		</header>
+		<AnimatePresence>
+			<motion.header
+				// whileHover={{backgroundColor: "grey"}}
+				initial={{opacity: 0}}
+				animate={{opacity: 1}}
+				exit={{opacity: 0}}
+			>
+				<Paragraph data={msg} />
+				<motion.div className="progress" style={{scaleX}} />
+				{data.map((image) => (
+					<Image urlString={image} key={image} />
+				))}
+			</motion.header>
+		</AnimatePresence>
 	);
 };
 
