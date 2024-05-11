@@ -16,7 +16,7 @@ import "./MessagePage.css";
 import {loadState} from "./localStorageUtils";
 
 const Message = () => {
-	const [data, setData] = useState<string[]>();
+	const [data, setData] = useState<string[]>([""]);
 	const [name, setName] = useState("");
 	const [msg, setMsg] = useState("");
 	const [url, setURL] = useState("");
@@ -28,27 +28,28 @@ const Message = () => {
 
 	useEffect(() => {
 		setName(loadState("name"));
+
+		const loadData = async () => {
+			const usersData = await getDocs(usersCollectionRef).then((result) => {
+				result.forEach((doc) => {
+					// doc.data() is never undefined for query doc snapshots
+					console.log(doc.id, " => ", doc.data());
+					if (doc.data().name === name) {
+						setData(doc.data().images);
+						console.log("data: " + doc.data().images);
+						setMsg(doc.data().msg);
+					}
+				});
+			});
+		};
 		loadData();
-	}, []);
-
-	const loadData = async () => {
-		const usersData = await getDocs(usersCollectionRef);
-
-		usersData.forEach((doc) => {
-			// doc.data() is never undefined for query doc snapshots
-			console.log(doc.id, " => ", doc.data());
-			if (doc.data().name === name) {
-				setData(doc.data().images);
-				setMsg(doc.data().msg);
-			}
-		});
-	};
+	}, [name]);
 
 	function useParallax(value: MotionValue<number>, distance: number) {
 		return useTransform(value, [0, 1], [-distance, distance]);
 	}
 
-	function Image({name}: {name: string}) {
+	function Image({urlString}: {urlString: string}) {
 		const ref = useRef(null);
 		const {scrollYProgress} = useScroll({target: ref});
 		const y = useParallax(scrollYProgress, 300);
@@ -58,7 +59,7 @@ const Message = () => {
 				<div ref={ref}>
 					<img src={url} alt="Cloud Storage" />
 				</div>
-				<motion.h2 style={{y}}>{name}</motion.h2>
+				{/* <motion.h2 style={{y}}>{name}</motion.h2> */}
 			</section>
 		);
 	}
@@ -102,14 +103,14 @@ const Message = () => {
 		return;
 	});
 
-	console.log("result: " + url);
+	console.log("data: " + data);
 
 	return (
 		<header>
 			<Paragraph />
 			<motion.div className="progress" style={{scaleX}} />
-			{["SR_2024/images/Rui_Zhe/093318980015.jpg"].map((image) => (
-				<Image name={image} key={image} />
+			{data.map((image) => (
+				<Image urlString={image} key={image} />
 			))}
 		</header>
 	);
