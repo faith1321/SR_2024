@@ -2,11 +2,12 @@ import {collection, getDocs} from "firebase/firestore";
 import {getDownloadURL, getStorage, ref} from "firebase/storage";
 import {
 	AnimatePresence,
+	MotionValue,
 	motion,
 	useAnimate,
 	useInView,
 	useScroll,
-	useSpring,
+	useTransform,
 } from "framer-motion";
 import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
@@ -20,11 +21,10 @@ const Message = () => {
 	const [data, setData] = useState<string[]>([""]);
 	const [name, setName] = useState("");
 	const [msg, setMsg] = useState("");
-	const [url, setURL] = useState("");
+	const [urls, setURLs] = useState<string[]>([""]);
 	const navigate = useNavigate();
 
 	const [scope, animate] = useAnimate();
-	const isInView = useInView(scope);
 
 	const usersCollectionRef = collection(db, "users").withConverter(
 		userConverter
@@ -49,21 +49,36 @@ const Message = () => {
 		loadData();
 	}, [name]);
 
-	// function useParallax(value: MotionValue<number>, distance: number) {
-	// 	return useTransform(value, [0, 1], [-distance, distance]);
-	// }
+	function useParallax(value: MotionValue<number>, distance: number) {
+		return useTransform(value, [0, 1], [-distance, distance]);
+	}
 
 	function Image({urlString}: {urlString: string}) {
-		const ref = useRef(null);
-		const {scrollYProgress} = useScroll({target: ref});
-		// const y = useParallax(scrollYProgress, 300);
+		const textRef = useRef(null);
+		const {scrollYProgress} = useScroll({target: textRef});
+		const viewRef = useRef(null);
+		const isInView = useInView(viewRef, {once: true});
+		const y = useParallax(scrollYProgress, 300);
+
+		// let url = "SR_2024/images/Rui Zhe/093318980015.jpg";
+		// getImageURL(urlString).then((result) => {
+		// 	url = result;
+		// });
 
 		return (
-			<section>
-				<div ref={ref}>
-					<img ref={scope} src={url} alt="Cloud Storage" />
+			<section ref={viewRef}>
+				<div
+					style={{
+						transform: isInView ? "none" : "translateX(-200px)",
+						opacity: isInView ? 1 : 0,
+						transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1) 0.5s",
+					}}
+					ref={textRef}
+					key={urlString}
+				>
+					<img ref={scope} src={urlString} alt="Cloud Storage" />
 				</div>
-				{/* <motion.h2 style={{y}}>{name}</motion.h2> */}
+				{<motion.h2 style={{y}}>{name}</motion.h2>}
 			</section>
 		);
 	}
@@ -72,9 +87,8 @@ const Message = () => {
 		const ref = useRef(null);
 		const {scrollYProgress} = useScroll({
 			target: ref,
-			offset: ["end", "start"],
+			offset: ["end end", "start start"],
 		});
-		// const scaleX = useSpring(scrollYProgress);
 
 		return (
 			<p className="paragraph">
@@ -95,51 +109,62 @@ const Message = () => {
 		);
 	};
 
-	useEffect(() => {
-		if (isInView) {
-			animate(scope.current, {opacity: 1});
-		}
-	}, [isInView]);
+	// const reference = useRef(null);
+	// const {scrollYProgress} = useScroll({
+	// 	target: reference,
+	// });
+	// const scaleX = useSpring(scrollYProgress, {
+	// 	stiffness: 100,
+	// 	damping: 30,
+	// 	restDelta: 0.001,
+	// });
 
-	const reference = useRef(null);
-	const {scrollYProgress} = useScroll({
-		target: reference,
-	});
-	const scaleX = useSpring(scrollYProgress, {
-		stiffness: 100,
-		damping: 30,
-		restDelta: 0.001,
-	});
+	const getImageURL = async (URLPointer: string) => {
+		if (URLPointer) {
+			const storage = getStorage();
+			const storageRef = ref(storage, URLPointer);
 
-	const getImageURL = async () => {
-		const storage = getStorage();
-		const storageRef = ref(storage, "SR_2024/images/Rui Zhe/093318980015.jpg");
-
-		let url = "";
-		url = await getDownloadURL(storageRef);
-		return url;
+			let url = "";
+			url = await getDownloadURL(storageRef);
+			return url;
+		} else return "";
 	};
 
-	getImageURL().then((result) => {
-		setURL(result);
-		return;
-	});
+	useEffect(() => {
+		data.map(async (image) => {
+			let url = "";
+			url = await getImageURL(image);
+			if (url === "" || url === null) {
+				return;
+			} else {
+				setURLs((oldArray) => [...oldArray, url]);
+			}
+		});
+	}, [data]);
 
-	console.log("data: " + data);
+	// getImageURL(data).then((result) => {
+	// 	setURLs(result);
+	// 	return;
+	// });
+
+	const renderImages = () => {
+		console.log("URLs : " + urls);
+		return urls.map(
+			(image) => image !== "" && <Image urlString={image} key={image} />
+		);
+	};
 
 	return (
 		<AnimatePresence>
 			<motion.header
-				// whileHover={{backgroundColor: "grey"}}
 				initial={{opacity: 0}}
 				animate={{opacity: 1}}
 				exit={{opacity: 0}}
 			>
 				<Paragraph data={msg} />
-				<motion.div className="progress" style={{scaleX}} />
-				{data.map((image) => (
-					<Image urlString={image} key={image} />
-				))}
+				<Paragraph data={msg} />
+				{/* <motion.div className="progress" style={{scaleX}} /> */}
+				{renderImages()}
 			</motion.header>
 		</AnimatePresence>
 	);
