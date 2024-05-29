@@ -18,10 +18,16 @@ import "./MessagePage.css";
 import {loadState} from "./localStorageUtils";
 
 const Message = () => {
-	const [data, setData] = useState<string[]>([""]);
+	interface ImageData {
+		url: string;
+		index: number;
+	}
+
+	const [image, setImage] = useState<string[]>([""]);
 	const [name, setName] = useState("");
-	const [msg, setMsg] = useState("");
-	const [urls, setURLs] = useState<string[]>([""]);
+	const [imgText, setImgText] = useState<string[]>([""]);
+	const [msg, setMsg] = useState<string[]>([""]);
+	const [imageData, setImageData] = useState<ImageData[]>([]);
 	const navigate = useNavigate();
 
 	const [scope, animate] = useAnimate();
@@ -39,7 +45,8 @@ const Message = () => {
 					// doc.data() is never undefined for query doc snapshots
 					console.log(doc.id, " => ", doc.data());
 					if (doc.data().name === name) {
-						setData(doc.data().images);
+						setImage(doc.data().images);
+						setImgText(doc.data().imgText);
 						console.log("data: " + doc.data().images);
 						setMsg(doc.data().msg);
 					}
@@ -53,7 +60,7 @@ const Message = () => {
 		return useTransform(value, [0, 1], [-distance, distance]);
 	}
 
-	function Image({urlString}: {urlString: string}) {
+	function Image({urlString, index}: {urlString: string; index: number}) {
 		const textRef = useRef(null);
 		const {scrollYProgress} = useScroll({target: textRef});
 		const viewRef = useRef(null);
@@ -78,7 +85,7 @@ const Message = () => {
 				>
 					<img ref={scope} src={urlString} alt="Cloud Storage" />
 				</div>
-				{<motion.h2 style={{y}}>{name}</motion.h2>}
+				{<motion.h2 style={{y}}>{imgText[index]}</motion.h2>}
 			</section>
 		);
 	}
@@ -131,16 +138,17 @@ const Message = () => {
 	};
 
 	useEffect(() => {
-		data.map(async (image) => {
+		image.map(async (image, index) => {
 			let url = "";
 			url = await getImageURL(image);
 			if (url === "" || url === null) {
 				return;
 			} else {
-				setURLs((oldArray) => [...oldArray, url]);
+				if (imageData !== undefined)
+					setImageData((oldArray) => [...oldArray, {url, index}]);
 			}
 		});
-	}, [data]);
+	}, [image]);
 
 	// getImageURL(data).then((result) => {
 	// 	setURLs(result);
@@ -148,9 +156,12 @@ const Message = () => {
 	// });
 
 	const renderImages = () => {
-		console.log("URLs : " + urls);
-		return urls.map(
-			(image) => image !== "" && <Image urlString={image} key={image} />
+		console.log("URLs : " + imageData);
+		return imageData?.map(
+			(image) =>
+				image.url !== "" && (
+					<Image urlString={image.url} key={image.index} index={image.index} />
+				)
 		);
 	};
 
@@ -161,8 +172,8 @@ const Message = () => {
 				animate={{opacity: 1}}
 				exit={{opacity: 0}}
 			>
-				<Paragraph data={msg} />
-				<Paragraph data={msg} />
+				<Paragraph data={msg[0]} />
+				<Paragraph data={msg[0]} />
 				{/* <motion.div className="progress" style={{scaleX}} /> */}
 				{renderImages()}
 			</motion.header>
