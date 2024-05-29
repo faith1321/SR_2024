@@ -100,11 +100,11 @@ h1 {
 h2 {
     margin: 0;
     color: var(--accent);
-    left: calc(50% + 130px);
-    font-size: 56px;
-    font-weight: 700;
+    bottom: calc(60% + 150px);
+    font-size: 40px;
+    font-weight: 600;
     letter-spacing: -3px;
-    line-height: 1.2;
+    /* line-height: 1.2; */
     position: absolute;
 }
 

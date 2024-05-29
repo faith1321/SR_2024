@@ -65,7 +65,7 @@ const Message = () => {
 		const {scrollYProgress} = useScroll({target: textRef});
 		const viewRef = useRef(null);
 		const isInView = useInView(viewRef, {once: true});
-		const y = useParallax(scrollYProgress, 300);
+		const y = useParallax(scrollYProgress, 600);
 
 		// let url = "SR_2024/images/Rui Zhe/093318980015.jpg";
 		// getImageURL(urlString).then((result) => {
