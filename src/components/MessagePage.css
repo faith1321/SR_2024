@@ -11,8 +11,9 @@ body {
     --red: #fe0222;
     --orange: #fd7702;
     --yellow: #ffbb00;
+    --dusty-pink: rgb(248, 182, 158);
 
-    --background: var(--red);
+    --background: var(--dusty-pink);
     --accent: var(--white);
 
     margin: 0;

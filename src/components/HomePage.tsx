@@ -47,6 +47,12 @@ const HomePage = () => {
 		});
 	};
 
+	const handleKeyboardInput = (event: {key: string}) => {
+		if (event.key === "Enter") {
+			handleButtonClick();
+		}
+	};
+
 	return (
 		<div className="flex flex-column gap-5 homepage">
 			<header>
@@ -84,6 +90,7 @@ const HomePage = () => {
 							toggleMask
 							value={pw}
 							onChange={(e) => setPw(e.target.value)}
+							onKeyUp={handleKeyboardInput}
 						/>
 					</div>
 					{pwCheck === "wrong" && (
