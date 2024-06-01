@@ -27,7 +27,6 @@ const HomePage = () => {
 
 		usersData.forEach((doc) => {
 			// doc.data() is never undefined for query doc snapshots
-			console.log(doc.id, " => ", doc.data());
 			if (name === doc.id) {
 				setUserCheck("correct");
 

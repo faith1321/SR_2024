@@ -43,11 +43,9 @@ const Message = () => {
 			const usersData = await getDocs(usersCollectionRef).then((result) => {
 				result.forEach((doc) => {
 					// doc.data() is never undefined for query doc snapshots
-					console.log(doc.id, " => ", doc.data());
 					if (doc.data().name === name) {
 						setImage(doc.data().images);
 						setImgText(doc.data().imgText);
-						console.log("data: " + doc.data().images);
 						setMsg(doc.data().msg);
 					}
 				});
@@ -160,7 +158,6 @@ const Message = () => {
 	};
 
 	const renderImages = () => {
-		console.log("URLs : " + imageData);
 		return imageData?.map(
 			(image) =>
 				image.url !== "" && (
