@@ -65,7 +65,7 @@ const Message = () => {
 		const {scrollYProgress} = useScroll({target: textRef});
 		const viewRef = useRef(null);
 		const isInView = useInView(viewRef, {once: true});
-		const y = useParallax(scrollYProgress, 600);
+		const y = useParallax(scrollYProgress, 300);
 
 		// let url = "SR_2024/images/Rui Zhe/093318980015.jpg";
 		// getImageURL(urlString).then((result) => {
@@ -155,6 +155,10 @@ const Message = () => {
 	// 	return;
 	// });
 
+	const renderParagraphs = () => {
+		return msg.map((text) => <Paragraph data={text} />);
+	};
+
 	const renderImages = () => {
 		console.log("URLs : " + imageData);
 		return imageData?.map(
@@ -172,8 +176,7 @@ const Message = () => {
 				animate={{opacity: 1}}
 				exit={{opacity: 0}}
 			>
-				<Paragraph data={msg[0]} />
-				<Paragraph data={msg[0]} />
+				{renderParagraphs()}
 				{/* <motion.div className="progress" style={{scaleX}} /> */}
 				{renderImages()}
 			</motion.header>
