@@ -65,11 +65,6 @@ const Message = () => {
 		const isInView = useInView(viewRef, {once: true});
 		const y = useParallax(scrollYProgress, 300);
 
-		// let url = "SR_2024/images/Rui Zhe/093318980015.jpg";
-		// getImageURL(urlString).then((result) => {
-		// 	url = result;
-		// });
-
 		return (
 			<section ref={viewRef}>
 				<div
@@ -99,7 +94,7 @@ const Message = () => {
 			<p className="paragraph">
 				<motion.div
 					className="paragraph-text"
-					style={{scale: scrollYProgress}}
+					// style={{scale: scrollYProgress}}
 					initial={{opacity: 0, scale: 0}}
 					animate={{opacity: 1, scale: [0, 1]}}
 					transition={{
@@ -113,16 +108,6 @@ const Message = () => {
 			</p>
 		);
 	};
-
-	// const reference = useRef(null);
-	// const {scrollYProgress} = useScroll({
-	// 	target: reference,
-	// });
-	// const scaleX = useSpring(scrollYProgress, {
-	// 	stiffness: 100,
-	// 	damping: 30,
-	// 	restDelta: 0.001,
-	// });
 
 	const getImageURL = async (URLPointer: string) => {
 		if (URLPointer) {
@@ -148,13 +133,8 @@ const Message = () => {
 		});
 	}, [image]);
 
-	// getImageURL(data).then((result) => {
-	// 	setURLs(result);
-	// 	return;
-	// });
-
 	const renderParagraphs = () => {
-		return msg.map((text) => <Paragraph data={text} />);
+		return msg.map((text, index) => <Paragraph data={text} key={index} />);
 	};
 
 	const renderImages = () => {
