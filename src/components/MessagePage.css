@@ -119,11 +119,11 @@ section {
 }
 
 section>div {
-    width: 600px;
-    height: 400px;
+    width: 80%;
+    height: 100%;
     position: relative;
-    max-height: 90vh;
-    margin: 20px;
+    max-height: 60vh;
+    /* max-width: 50vw; */
     background: var(--white);
     overflow: hidden;
 }
@@ -152,4 +152,9 @@ img {
     height: 100vh;
     align-content: center;
     font-family: "Gill Sans", sans-serif;
+}
+
+header {
+    align-self: center;
+    align-content: center;
 }
