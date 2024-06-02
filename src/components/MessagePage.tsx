@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import NameSVG from "../assets/svgs/NameSVG";
 import {db} from "../firebase/firebase-config";
 import {userConverter} from "../firebase/firebaseUtils";
 import "./HomePage.css";
@@ -134,7 +135,9 @@ const Message = () => {
 	}, [image]);
 
 	const renderParagraphs = () => {
-		return msg.map((text, index) => <Paragraph data={text} key={index} />);
+		return msg.map((text, index) =>
+			index + 1 == msg.length ? null : <Paragraph data={text} key={index} />
+		);
 	};
 
 	const renderImages = () => {
@@ -143,6 +146,20 @@ const Message = () => {
 				image.url !== "" && (
 					<Image urlString={image.url} key={image.index} index={image.index} />
 				)
+		);
+	};
+
+	const renderEnding = () => {
+		const index = msg.length - 1;
+		return (
+			<>
+				<Paragraph data={msg[index]} key={index} />
+				<div style={{width: "28%", height: "20%", marginLeft: "auto"}}>
+					<p className="ending-text">Cheers,</p>
+					<NameSVG width="100%" height="10%" viewBox="0 0 1200 640" />
+					<p className="ending-text">8 June 2024.</p>
+				</div>
+			</>
 		);
 	};
 
@@ -156,6 +173,7 @@ const Message = () => {
 				{renderParagraphs()}
 				{/* <motion.div className="progress" style={{scaleX}} /> */}
 				{renderImages()}
+				{renderEnding()}
 			</motion.header>
 		</AnimatePresence>
 	);
