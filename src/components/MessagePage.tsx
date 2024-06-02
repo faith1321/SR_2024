@@ -3,6 +3,7 @@ import {getDownloadURL, getStorage, ref} from "firebase/storage";
 import {
 	AnimatePresence,
 	MotionValue,
+	Variants,
 	motion,
 	useAnimate,
 	useInView,
@@ -84,6 +85,19 @@ const Message = () => {
 		);
 	}
 
+	const variants: Variants = {
+		initial: {opacity: 0, scale: 0},
+		onScreen: {
+			opacity: 1,
+			scale: [0, 1],
+			transition: {
+				duration: 0.8,
+				delay: 0.1,
+				ease: [0, 0.71, 0.2, 1.01],
+			},
+		},
+	};
+
 	const Paragraph = ({data}: {data: string}) => {
 		const ref = useRef(null);
 		const {scrollYProgress} = useScroll({
@@ -92,21 +106,22 @@ const Message = () => {
 		});
 
 		return (
-			<p className="paragraph">
-				<motion.div
-					className="paragraph-text"
-					// style={{scale: scrollYProgress}}
-					initial={{opacity: 0, scale: 0}}
-					animate={{opacity: 1, scale: [0, 1]}}
-					transition={{
-						duration: 0.8,
-						delay: 0.1,
-						ease: [0, 0.71, 0.2, 1.01],
-					}}
-				>
-					{data}
-				</motion.div>
-			</p>
+			<section>
+				<p className="paragraph">
+					<div ref={ref} style={{overflow: "scroll"}}>
+						<motion.div
+							className="paragraph-text"
+							// style={{scale: scrollYProgress}}
+							initial="initial"
+							whileInView="onScreen"
+							viewport={{once: true, amount: 0.8}}
+							variants={variants}
+						>
+							{data}
+						</motion.div>
+					</div>
+				</p>
+			</section>
 		);
 	};
 
