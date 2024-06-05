@@ -65,7 +65,7 @@ const Message = () => {
 		const {scrollYProgress} = useScroll({target: textRef});
 		const viewRef = useRef(null);
 		const isInView = useInView(viewRef, {once: true});
-		const y = useParallax(scrollYProgress, 300);
+		const y = useParallax(scrollYProgress, 600);
 
 		return (
 			<section ref={viewRef}>
@@ -107,20 +107,18 @@ const Message = () => {
 
 		return (
 			<section>
-				<p className="paragraph">
-					<div ref={ref} style={{overflow: "scroll"}}>
-						<motion.div
-							className="paragraph-text"
-							// style={{scale: scrollYProgress}}
-							initial="initial"
-							whileInView="onScreen"
-							viewport={{once: true, amount: 0.8}}
-							variants={variants}
-						>
-							{data}
-						</motion.div>
-					</div>
-				</p>
+				{/* <div ref={ref} style={{overflow: "scroll"}}> */}
+				<motion.div
+					className="paragraph-text"
+					style={{overflow: "scroll"}}
+					initial="initial"
+					whileInView="onScreen"
+					viewport={{once: true, amount: 0.8}}
+					variants={variants}
+				>
+					<p className="paragraph">{data}</p>
+				</motion.div>
+				{/* </div> */}
 			</section>
 		);
 	};
@@ -172,7 +170,8 @@ const Message = () => {
 				<div style={{width: "28%", height: "20%", marginLeft: "auto"}}>
 					<p className="ending-text">Cheers,</p>
 					<NameSVG width="100%" height="10%" viewBox="0 0 1200 640" />
-					<p className="ending-text">8 June 2024.</p>
+					<p className="ending-text">June 2024.</p>
+					<h1></h1>
 				</div>
 			</>
 		);
